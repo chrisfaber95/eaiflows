@@ -1,0 +1,175 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="xml" format="xml">
+      <types:example format="xml" element="Bericht" location="examples/tijdxml.xml"/>
+    </types:type>
+    <types:type name="eta" format="xml">
+      <types:example format="xml" element="ETA" location="examples/etaxml.xml"/>
+    </types:type>
+    <types:type name="etajson" format="json">
+      <types:shape format="weave" example="examples/etajson.json"><![CDATA[%dw 2.0
+
+type etajson = {|
+  tijd: Number {"typeId": "int"}, 
+  aankomsttijd: Number {"typeId": "int"}, 
+  lijnNaam: String, 
+  busID: String, 
+  bedrijf: String, 
+  eindpunt: String
+|} {"example": "{\\\"tijd\\\":15,\\\"aankomsttijd\\\":32,\\\"lijnNaam\\\":\\\"\u201DLIJN1\u201D\\\",\\\"busID\\\":\\\"\u201D3LIJN1R-1\u201D\\\",\\\"bedrijf\\\":\\\"\u201DARRIVA\u201D\\\",\\\"eindpunt\\\":\\\"\u201DA\u201D\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="halteexample" format="xml">
+      <types:example format="xml" element="haltebericht" location="examples/halteberichtXML.xml"/>
+    </types:type>
+    <types:type name="aankomstexample" format="xml">
+      <types:example format="xml" element="aankomstbericht" location="examples/aankomstberichtXML.xml"/>
+    </types:type>
+    <types:type name="etalogexample" format="xml">
+      <types:example format="xml" element="Bericht" location="examples/berichtXML.xml"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#ca8ae6f3-c993-46af-9af8-cc5c789c1408">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="eta"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="etajson"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#96a49e36-2157-40a5-8fc0-211753969fdd">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="xml"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#ba343db4-d09f-4515-b537-ddfd7e3ae8d1">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="eta"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="eta"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#6163f26d-6c61-4308-b392-2388d22b799c">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="etajson"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="etajson"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#5d70e418-fb50-46ea-baaa-a7b9c2684803">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="eta"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#4f9a75a8-5e07-4242-badb-9abbe8c2b612">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="etajson"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#0b1540bf-91dd-490e-81b8-3d54dbff6876">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="xml"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#02546cb1-da96-4372-8828-97fcd6b9f6f9">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="eta"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#2c5d7eee-5b3f-4a19-a05e-53ca95fb98be">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="xml"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#f8e20844-e4c3-4b16-831f-c6ce7e1a2b8d">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="aankomstexample"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#4c8aa90e-3562-457e-a8e7-bbd87d188d1b">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="etalogexample"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#11d1017d-c1ba-4bab-a82d-d860cfa61b69">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="halteexample"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#16a21285-7311-4121-9955-5aa94dcfa158">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="eta"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#d93a1b69-a7c7-4ab0-b976-634aa01ab747">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="halteexample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

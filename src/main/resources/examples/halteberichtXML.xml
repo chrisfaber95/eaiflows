@@ -1,0 +1,7 @@
+<haltebericht>
+	<busID>busid</busID>
+	<lijn>lijn</lijn>
+	<halte>lijn</halte>
+	<tijd>0</tijd>
+	<eindpunt>lijn</eindpunt>
+</haltebericht>

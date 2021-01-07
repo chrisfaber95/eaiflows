@@ -1,0 +1,6 @@
+<aankomstbericht>
+	<busID>busid</busID>
+	<lijn>lijn</lijn>
+	<eindpunt>eindpunt</eindpunt>
+	<aankomsttijd>0</aankomsttijd>
+</aankomstbericht>

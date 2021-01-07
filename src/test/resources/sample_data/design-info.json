@@ -1,0 +1,17 @@
+{
+  "sampleData": {
+    "fcfd0e8d-0e2d-4258-a88e-bb09ddb099d7": {
+      "vars-X": "sample_data/defaultstringtype.dwl"
+    },
+    "ca8ae6f3-c993-46af-9af8-cc5c789c1408": {
+      "vars-rootMessage": "sample_data/message.dwl",
+      "vars-etas": "sample_data/defaultnumbertype.dwl"
+    },
+    "4c8aa90e-3562-457e-a8e7-bbd87d188d1b": {
+      "vars-ETAVerwerk": "sample_data/haltenaam.xml"
+    },
+    "11d1017d-c1ba-4bab-a82d-d860cfa61b69": {
+      "vars-ETAVerwerk": "sample_data/halteNaam_1.xml"
+    }
+  }
+}

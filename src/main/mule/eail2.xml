@@ -55,21 +55,21 @@ output application/json
 		</foreach>
 	</flow>
 	<flow name="Copy_of_eail2Flow" doc:id="85c8360b-a932-4a8a-964b-5dd2d826f8d5" >
-		<jms:listener doc:name="Copy_of_On New Message" doc:id="2c5d7eee-5b3f-4a19-a05e-53ca95fb98be" config-ref="JMS_Config" destination="Hallo" ackMode="AUTO" inboundContentType="application/xml" >
+		<jms:listener doc:name="Incoming Message from Simulator" doc:id="2c5d7eee-5b3f-4a19-a05e-53ca95fb98be" config-ref="JMS_Config" destination="Hallo" ackMode="AUTO" inboundContentType="application/xml" >
 			<jms:consumer-type >
 				<jms:queue-consumer />
 			</jms:consumer-type>
 		</jms:listener>
-		<set-variable value="#[payload]" doc:name="Copy_of_Copy_of_Set Variable" doc:id="7246d77c-0c52-44ab-98cd-3b69dc0d69f9" variableName="Busgegevens" />
-		<foreach doc:name="Copy_of_Copy_of_Copy_of_For Each" doc:id="e36041db-403e-42f1-a1eb-91c863203efc" collection="#[payload.Bericht.ETAs]" counterVariableName="etas" >
+		<set-variable value="#[payload]" doc:name="Set Busgegevens" doc:id="7246d77c-0c52-44ab-98cd-3b69dc0d69f9" variableName="Busgegevens" />
+		<foreach doc:name="For each ETA" doc:id="e36041db-403e-42f1-a1eb-91c863203efc" collection="#[payload.Bericht.ETAs]" counterVariableName="etas" >
 			<set-variable value="#[%dw 2.0
 output application/xml
 ---
-payload]" doc:name="Copy_of_Copy_of_Copy_of_Set Variable" doc:id="16a21285-7311-4121-9955-5aa94dcfa158" variableName="ETAVerwerk" />
+payload]" doc:name="Set ETA variabel" doc:id="16a21285-7311-4121-9955-5aa94dcfa158" variableName="ETAVerwerk" />
 			<async doc:name="Copy_of_Async" doc:id="2977b9a1-db6d-4e1b-a2db-e41fd1339035" >
-				<choice doc:name="Copy_of_Copy_of_Choice" doc:id="3873efaf-b33d-4393-a1a1-117a820939ea" >
+				<choice doc:name="Choice" doc:id="3873efaf-b33d-4393-a1a1-117a820939ea" >
 					<when expression='#[vars.Busgegevens.Bericht.bedrijf == "QBUZZ" and vars.ETAVerwerk.ETA.aankomsttijd != 0 and vars.Busgegevens.Bericht.eindpunt != vars.ETAVerwerk.ETA.halteNaam]' doc:id="4f9a75a8-5e07-4242-badb-9abbe8c2b612" >
-						<ee:transform doc:name="Transform Message" doc:id="11d1017d-c1ba-4bab-a82d-d860cfa61b69">
+						<ee:transform doc:name="Transform To HalteXML" doc:id="11d1017d-c1ba-4bab-a82d-d860cfa61b69">
 							<ee:message>
 								<ee:set-payload><![CDATA[%dw 2.0
 output application/xml
@@ -97,7 +97,7 @@ con#receiveBusBijHalte: payload]]]></wsc:body>
 						<logger level="INFO" doc:name="Copy_of_Logger" doc:id="848cd316-20f3-4d36-9be3-f294373c9e4b"/>
 					</when>
 					<when expression='#[vars.Busgegevens.Bericht.Bedrijf == "QBUZZ" and vars.ETAVerwerk.ETA.aankomsttijd == 0 and sizeOf(vars.Busgegevens.Bericht.ETAs) == 1]' >
-						<ee:transform doc:name="Copy_of_Copy_of_Copy_of_Copy_of_Transform Message" doc:id="f8e20844-e4c3-4b16-831f-c6ce7e1a2b8d">
+						<ee:transform doc:name="Transform to EindhalteXML" doc:id="f8e20844-e4c3-4b16-831f-c6ce7e1a2b8d">
 							<ee:message>
 								<ee:set-payload><![CDATA[%dw 2.0
 output application/xml
@@ -111,7 +111,7 @@ aankomstbericht:{
 ]]></ee:set-payload>
 							</ee:message>
 						</ee:transform>
-						<wsc:consume operation="receiveBusBijEindpunt" doc:name="Copy_of_Copy_of_Copy_of_Consume" doc:id="27ecbb6f-3eb8-4eac-b226-3b2a66eaaa17" config-ref="Web_Service_Consumer_Config" >
+						<wsc:consume operation="receiveBusBijEindpunt" doc:name="Consume" doc:id="27ecbb6f-3eb8-4eac-b226-3b2a66eaaa17" config-ref="Web_Service_Consumer_Config" >
 							<wsc:message >
 								<wsc:body ><![CDATA[#[%dw 2.0
 output application/xml
@@ -123,7 +123,7 @@ con#receiveBusBijEindpunt: payload]]]></wsc:body>
 						<logger level="INFO" doc:name="Copy_of_Logger" doc:id="932ef8c6-fe36-4842-b35b-33916136f7d6" message="#[payload]" />
 					</when>
 					<when expression='#[vars.Busgegevens.Bericht.bedrijf == "QBUZZ" and vars.Busgegevens.Bericht.bedrijf != "QBUZZ"]' >
-						<ee:transform doc:name="Copy_of_Copy_of_Copy_of_Copy_of_Transform Message" doc:id="4c8aa90e-3562-457e-a8e7-bbd87d188d1b" >
+						<ee:transform doc:name="Transform to ETALog" doc:id="4c8aa90e-3562-457e-a8e7-bbd87d188d1b" >
 							<ee:message >
 								<ee:set-payload ><![CDATA[%dw 2.0
 output application/xml
@@ -141,7 +141,7 @@ Bericht:{
 ]]></ee:set-payload>
 							</ee:message>
 						</ee:transform>
-						<wsc:consume operation="logEtas" doc:name="Copy_of_Copy_of_Copy_of_Copy_of_Consume" doc:id="a8224258-8544-47b7-b3fd-24ebb89c55b2" config-ref="Web_Service_Consumer_Config" >
+						<wsc:consume operation="logEtas" doc:name="Consume" doc:id="a8224258-8544-47b7-b3fd-24ebb89c55b2" config-ref="Web_Service_Consumer_Config" >
 							<wsc:message >
 								<wsc:body ><![CDATA[#[%dw 2.0
 output application/xml
@@ -152,10 +152,10 @@ con#logEtas: payload]]]></wsc:body>
 						</wsc:consume>
 						<logger level="INFO" doc:name="Copy_of_Logger" doc:id="47ef5a7e-2f71-4713-a8f9-6def30b89c25" message="#[payload]" />
 					</when>
-					<otherwise >
-						<ee:transform doc:name="Copy_of_Copy_of_Copy_of_Copy_of_Copy_of_Copy_of_Transform Message" doc:id="50ee8e91-3e9f-42a0-a6d0-ecbe8b7f6a23" >
-							<ee:message >
-								<ee:set-payload ><![CDATA[%dw 2.0
+					<otherwise>
+						<ee:transform doc:name="Transform Message" doc:id="5480c812-657a-4679-b244-712174f1e090">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -169,10 +169,11 @@ output application/json
 ]]></ee:set-payload>
 							</ee:message>
 						</ee:transform>
+						<logger level="INFO" doc:name="Logger" doc:id="b78e949a-8d3a-414a-88c2-5d8600344b2e" message="#[payload]" />
 					</otherwise>
 				</choice>
 			</async>
-			<jms:publish doc:name="Copy_of_Publish" doc:id="35072353-9fec-4b8a-b99a-30e2a0527110" config-ref="JMS_Config" destination="INFOBORD" destinationType="TOPIC" />
+			<jms:publish doc:name="Publish" doc:id="35072353-9fec-4b8a-b99a-30e2a0527110" config-ref="JMS_Config" destination="INFOBORD" destinationType="TOPIC" />
 		</foreach>
 	</flow>
 

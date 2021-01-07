@@ -76,10 +76,10 @@ payload]" doc:name="Copy_of_Copy_of_Copy_of_Set Variable" doc:id="16a21285-7311-
 								<ee:set-payload><![CDATA[%dw 2.0
 output application/xml
 ---
-haltebericht:{
+haltebericht: {
 	busID: vars.Busgegevens.Bericht.busID,
 	lijn: vars.Busgegevens.Bericht.lijnNaam,
-	halte: vars.ETAVerwerk.halteNaam,
+	halte: vars.ETAVerwerk.ETA.halteNaam,
 	tijd: vars.Busgegevens.Bericht.tijd,
 	eindpunt: vars.Busgegevens.Bericht.eindpunt
 }

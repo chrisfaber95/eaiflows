@@ -66,8 +66,6 @@ output application/json
 output application/xml
 ---
 payload]" doc:name="Copy_of_Copy_of_Copy_of_Set Variable" doc:id="16a21285-7311-4121-9955-5aa94dcfa158" variableName="ETAVerwerk" />
-			<logger level="INFO" doc:name="Logger" doc:id="bfd522ce-1481-4fb6-9b7c-2f6c79476cd4" message="#[payload]" />
-			<logger level="INFO" doc:name="Logger" doc:id="42873613-2260-44de-b088-85a702005d1c" message="#[vars.ETAVerwerk]"/>
 			<async doc:name="Copy_of_Async" doc:id="2977b9a1-db6d-4e1b-a2db-e41fd1339035" >
 				<choice doc:name="Copy_of_Copy_of_Choice" doc:id="3873efaf-b33d-4393-a1a1-117a820939ea" >
 					<when expression='#[vars.Busgegevens.Bericht.bedrijf == "QBUZZ" and vars.ETAVerwerk.ETA.aankomsttijd != 0 and vars.Busgegevens.Bericht.eindpunt != vars.ETAVerwerk.ETA.halteNaam]' doc:id="4f9a75a8-5e07-4242-badb-9abbe8c2b612" >
@@ -92,7 +90,7 @@ haltebericht: {
 output application/xml
 ns con http://soapserver.qbuzz.com/
 ---
-con#receiveBusBijEindpunt: payload]]]></wsc:body>
+con#receiveBusBijHalte: payload]]]></wsc:body>
 							</wsc:message>
 							<wsc:message-customizations forceXMLProlog="true" />
 						</wsc:consume>
@@ -108,7 +106,7 @@ aankomstbericht:{
 	busID: vars.Busgegevens.Bericht.busID,
 	lijn: vars.Busgegevens.Bericht.lijnNaam,
 	eindpunt: vars.Busgegevens.Bericht.eindpunt,
-	aankomsttijd: vars.ETAVerwerk.aankomsttijd
+	aankomsttijd: vars.ETAVerwerk.ETA.aankomsttijd
 }
 ]]></ee:set-payload>
 							</ee:message>
@@ -136,7 +134,7 @@ Bericht:{
 	eindpunt: vars.Busgegevens.Bericht.eindpunt,
 	busID: vars.Busgegevens.Bericht.busID,
 	tijd: vars.Busgegevens.Bericht.tijd,
-	aankomsttijd: vars.ETAVerwerk.aankomsttijd,
+	aankomsttijd: vars.ETAVerwerk.ETA.aankomsttijd,
 	ETAs: vars.Busgegevens.Bericht.ETAs
 }
 
@@ -149,7 +147,7 @@ Bericht:{
 output application/xml
 ns con http://soapserver.qbuzz.com/
 ---
-con#receiveBusBijEindpunt: payload]]]></wsc:body>
+con#logEtas: payload]]]></wsc:body>
 							</wsc:message>
 						</wsc:consume>
 						<logger level="INFO" doc:name="Copy_of_Logger" doc:id="47ef5a7e-2f71-4713-a8f9-6def30b89c25" message="#[payload]" />

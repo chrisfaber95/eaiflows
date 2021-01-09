@@ -30,6 +30,24 @@ type etajson = {|
     <types:type name="etalogexample" format="xml">
       <types:example format="xml" element="Bericht" location="examples/berichtXML.xml"/>
     </types:type>
+    <types:type name="timeserverxml" format="xml">
+      <types:example format="xml" element="Tijd" location="examples/tijdserverxml.xml"/>
+    </types:type>
+    <types:type name="timeserverjson" format="json">
+      <types:shape format="weave" example="examples/tijdserverjson.json"><![CDATA[%dw 2.0
+
+type timeserverjson = {|
+  uur: Number {"typeId": "int"}, 
+  minuut: Number {"typeId": "int"}, 
+  seconde: Number {"typeId": "int"}
+|} {"example": "{\\\"uur\\\":5,\\\"minuut\\\":20,\\\"seconde\\\":43}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="flixlog" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
   </types:catalog>
   <types:enrichment select="#ca8ae6f3-c993-46af-9af8-cc5c789c1408">
     <types:processor-declaration>
@@ -168,6 +186,45 @@ type etajson = {|
       <types:input-event>
         <types:message>
           <types:payload type="halteexample"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#a19c31a3-8b77-4d57-8da5-01e0b454dc05">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="timeserverjson"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="timeserverxml"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#c1db809a-103a-489c-b348-1f0cf0135b55">
+    <types:operation-declaration>
+      <types:inputs>
+        <types:parameter name="inputParameters" type="flixlog"/>
+      </types:inputs>
+    </types:operation-declaration>
+  </types:enrichment>
+  <types:enrichment select="#5480c812-657a-4679-b244-712174f1e090">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="etajson"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#a43d49a6-275d-4f6f-91ab-311a7027042f">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="etajson"/>
         </types:message>
       </types:input-event>
     </types:processor-declaration>

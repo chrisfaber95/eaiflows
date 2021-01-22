@@ -29,7 +29,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="a529aa23-0329-4b0b-bb08-84c02ec03ed8" >
-		<db:my-sql-connection host="10.83.16.110" port="3306" user="root" password="password" database="buslogging" />
+		<db:my-sql-connection host="217.104.40.222" port="3306" user="root" password="password" database="buslogging" />
 	</db:config>
 	<flow name="opdracht1" doc:id="123962ba-9be5-45fc-b686-0c54ac8471ad" >
 		<jms:listener doc:name="On New Message" doc:id="96a49e36-2157-40a5-8fc0-211753969fdd" destination="ARRIVALOGGER1" ackMode="AUTO" config-ref="JMS_Config" inboundContentType="application/xml">
@@ -45,6 +45,15 @@ payload]" doc:name="Set Payload" doc:id="ba343db4-d09f-4515-b537-ddfd7e3ae8d1" /
 output text
 ---
 (payload.ETA.halteNaam) ++ (payload.ETA.richting as String)]" doc:name="Set Variable" doc:id="5d70e418-fb50-46ea-baaa-a7b9c2684803" variableName="halte" />
+			<jms:publish doc:name="Copy_of_Publish" doc:id="35506922-5638-4004-9d54-7be96602bef2" config-ref="JMS_Config" destination="ARRIVALOGGER" />
+			<ee:transform doc:name="Copy_of_Transform Message" doc:id="f0160e88-2505-4c60-b0dd-ef3b95af6659" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+vars.rootMessage.payload.Bericht]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
 		</foreach>
 	</flow>
 	<flow name="Opdracht2" doc:id="85c8360b-a932-4a8a-964b-5dd2d826f8d5" >
@@ -102,7 +111,7 @@ con#receiveBusBijHalte: payload]]]></wsc:body>
 							<wsc:message-customizations forceXMLProlog="true" />
 						</wsc:consume>
 					</when>
-					<when expression='#[vars.Busgegevens.Bericht.Bedrijf == "QBUZZ" and vars.ETAVerwerk.ETA.aankomsttijd == 0 and sizeOf(vars.Busgegevens.Bericht.ETAs) == 1]' >
+					<when expression='#[vars.Busgegevens.Bericht.Bedrijf == "QBUZZ" and vars.ETAVerwerk.ETA.aankomsttijd != "0" and sizeOf(vars.Busgegevens.Bericht.ETAs) == 1]' >
 						<ee:transform doc:name="Transform to EindhalteXML" doc:id="f8e20844-e4c3-4b16-831f-c6ce7e1a2b8d">
 							<ee:message>
 								<ee:set-payload><![CDATA[%dw 2.0
@@ -117,7 +126,7 @@ aankomstbericht:{
 ]]></ee:set-payload>
 							</ee:message>
 						</ee:transform>
-						<logger level="INFO" doc:name="Copy_of_Copy_of_Logger" doc:id="b517d41f-abbe-42a0-8300-4e765abee418" message="#[payload]" />
+						<logger level="INFO" doc:name="Copy_of_Copy_of_Logger" doc:id="b517d41f-abbe-42a0-8300-4e765abee418" message="#[payload]"/>
 						<wsc:consume operation="receiveBusBijEindpunt" doc:name="Consume" doc:id="27ecbb6f-3eb8-4eac-b226-3b2a66eaaa17" config-ref="Web_Service_Consumer_Config" >
 							<wsc:message >
 								<wsc:body ><![CDATA[#[%dw 2.0
@@ -128,26 +137,22 @@ con#receiveBusBijEindpunt: payload]]]></wsc:body>
 							</wsc:message>
 						</wsc:consume>
 					</when>
-					<when expression='#[vars.Busgegevens.Bericht.bedrijf == "QBUZZ"]' >
+					<when expression='#[vars.Busgegevens.Bericht.bedrijf == "QBUZZ" and vars.ETAVerwerk.ETA.aankomsttijd &lt;= "0"]' >
 						<ee:transform doc:name="Copy_of_Transform to ETALog" doc:id="0f5952b0-2107-4dac-bf82-17f0696d8234">
 							<ee:message>
-								<ee:set-payload><![CDATA[%dw 2.0
-output application/xml
+								<ee:set-payload><![CDATA[output application/xml
 ---
-Bericht:{
-	lijnNaam: vars.Busgegevens.Bericht.lijnNaam,
-	bedrijf: vars.Busgegevens.Bericht.lijnNaam,
+etaBericht:{
+	lijn: vars.Busgegevens.Bericht.lijnNaam,
+	bedrijf: vars.Busgegevens.Bericht.bedrijf,
 	eindpunt: vars.Busgegevens.Bericht.eindpunt,
 	busID: vars.Busgegevens.Bericht.busID,
 	tijd: vars.Busgegevens.Bericht.tijd,
-	aankomsttijd: vars.ETAVerwerk.ETA.aankomsttijd,
 	ETAs: vars.Busgegevens.Bericht.ETAs
-}
-
-]]></ee:set-payload>
+}]]></ee:set-payload>
 							</ee:message>
 						</ee:transform>
-						<logger level="INFO" doc:name="Copy_of_Copy_of_Logger" doc:id="dedfee2f-178d-4d1a-9858-34cb01eaab6b" message="#[payload]" />
+						<logger level="INFO" doc:name="Copy_of_Copy_of_Logger" doc:id="dedfee2f-178d-4d1a-9858-34cb01eaab6b" message="#[payload]"/>
 						<wsc:consume operation="logEtas" doc:name="Consume" doc:id="a8224258-8544-47b7-b3fd-24ebb89c55b2" config-ref="Web_Service_Consumer_Config" >
 							<wsc:message >
 								<wsc:body ><![CDATA[#[%dw 2.0
@@ -157,17 +162,6 @@ ns con http://soapserver.qbuzz.com/
 con#logEtas: payload]]]></wsc:body>
 							</wsc:message>
 						</wsc:consume>
-					</when>
-					<when expression='#[vars.Busgegevens.Bericht.bedrijf == "ARRIVA"]'>
-						<ee:transform doc:name="Transform Message" doc:id="ca8ae6f3-c993-46af-9af8-cc5c789c1408">
-				<ee:message>
-					<ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-vars.rootMessage.payload.Bericht]]></ee:set-payload>
-				</ee:message>
-			</ee:transform>
-						<jms:publish doc:name="Publish" doc:id="6163f26d-6c61-4308-b392-2388d22b799c" config-ref="JMS_Config" destination="ARRIVALOGGER" />
 					</when>
 					<otherwise>
 						<ee:transform doc:name="Copy_of_Transform Message" doc:id="834cf1f7-e737-4582-80f5-8d3cc6a32b73" >
@@ -189,16 +183,48 @@ output application/json
 					</otherwise>
 				</choice>
 			</async>
-			<jms:publish doc:name="Publish" doc:id="35072353-9fec-4b8a-b99a-30e2a0527110" config-ref="JMS_Config" destination="INFOBORD" destinationType="TOPIC">
-				<jms:message jmsType="#[(vars.ETAVerwerk.ETA.halteNaam) ++ (vars.ETAVerwerk.ETA.richting as String)]" />
+			<jms:publish doc:name="Publish" doc:id="35072353-9fec-4b8a-b99a-30e2a0527110" config-ref="JMS_Config" destination="Infobord" destinationType="TOPIC">
+				<jms:message jmsType="#[(vars.ETAVerwerk.ETA.halteNaam) ++ (vars.ETAVerwerk.ETA.richting as String)]" >
+					<jms:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	'tijd': vars.Busgegevens.Bericht.tijd,
+	'aankomsttijd': vars.ETAVerwerk.ETA.aankomsttijd,
+	'lijnNaam': vars.Busgegevens.Bericht.lijnNaam,
+	'busID': vars.Busgegevens.Bericht.busID,
+	'bedrijf': vars.Busgegevens.Bericht.bedrijf,
+	'eindpunt': vars.Busgegevens.Bericht.eindpunt
+}]]]></jms:body>
+				</jms:message>
 			</jms:publish>
 		</foreach>
-		<choice doc:name="Choice" doc:id="532593d2-7e4e-4a53-a444-1c8288c13db8" >
-			<when expression='#[vars.Busgegevens.Bericht.bedrijf == "FLIXBUS"]'>
-				<db:insert doc:name="Insert" doc:id="3e245f55-6f29-4c5e-87a9-0bc5e80266d9" config-ref="Database_Config">
-					<db:sql ><![CDATA[INSERT INTO qbuzzlog (logrecord) VALUES(:flixlogs)]]></db:sql>
-					<db:input-parameters ><![CDATA[#[{'flixlogs': vars.databaseString}]]]></db:input-parameters>
-				</db:insert>
+		<choice doc:name="Choice" doc:id="5d7bf018-4cb7-478f-87e9-0b0d258b52c7" >
+			<when expression='#[vars.Busgegevens.Bericht.bedrijf == "ARRIVA"]'>
+				<ee:transform doc:name="Copy_of_Transform Message" doc:id="b4355d9f-e0cf-4c44-906c-19c3c0281ddd">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+
+---
+Bericht:{
+	lijnNaam: vars.Busgegevens.Bericht.lijnNaam,
+	bedrijf: vars.Busgegevens.Bericht.bedrijf,
+	eindpunt: vars.Busgegevens.Bericht.eindpunt,
+	busID: vars.Busgegevens.Bericht.busID,
+	tijd: vars.Busgegevens.Bericht.tijd,
+	ETAs: vars.Busgegevens.Bericht.ETAs
+	}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="24036549-e1e7-46ac-8514-fd28c2527d01"/>
+				<jms:publish doc:name="Copy_of_Publish" doc:id="90ea36a9-4a02-40db-bf00-89a71022a42d" config-ref="JMS_Config" destination="ARRIVALOGGER" />
+			</when>
+			<when expression='#[vars.Busgegevens.Bericht.bedrijf == "FLIXBUS"]' >
+				<db:insert doc:name="Copy_of_Insert" doc:id="5265bb71-1ec0-4105-b403-1cec00c74b47" config-ref="Database_Config">
+			<db:sql><![CDATA[INSERT INTO qbuzzlog (logrecord) VALUES(:flixlogs)]]></db:sql>
+			<db:input-parameters><![CDATA[#[{'flixlogs': vars.databaseString}]]]></db:input-parameters>
+		</db:insert>
 			</when>
 		</choice>
 	</flow>

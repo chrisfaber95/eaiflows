@@ -229,4 +229,77 @@ type: string]]></types:shape>
       </types:input-event>
     </types:processor-declaration>
   </types:enrichment>
+  <types:enrichment select="#3873efaf-b33d-4393-a1a1-117a820939ea">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="xml"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#b4355d9f-e0cf-4c44-906c-19c3c0281ddd">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="xml"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#24036549-e1e7-46ac-8514-fd28c2527d01">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="xml"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="xml"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#90ea36a9-4a02-40db-bf00-89a71022a42d">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="xml"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#35072353-9fec-4b8a-b99a-30e2a0527110">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="etajson"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#0f5952b0-2107-4dac-bf82-17f0696d8234">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="xml"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#dedfee2f-178d-4d1a-9858-34cb01eaab6b">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="xml"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="xml"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
 </types:mule>
